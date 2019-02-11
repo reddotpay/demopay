@@ -1,0 +1,14 @@
+{
+    "terminal.integrated.env.osx": {
+        "CARDPAY_API": "https://cardpay.api.reddotpay.sg/v1/",
+        "CARD_API": "https://card.api.reddotpay.sg/v1/",
+        "ALTPAY_API": "https://altpay.api.reddotpay.sg/v1/",
+        "SECURE_API": "https://3dsecure.api.reddotpay.sg/v1/",
+        "OAUTH_URL": "https://secure.api.reddotpay.sg/oauth2/token",
+        "API_CLIENT_SECRET": "1ngknrseh1seblopbf2rht8njbaj99ora4vmv8c251aajhkss7rh",
+        "API_CLIENT_ID": "5kb206d0ait67ma3lrgo5nd4d1",
+        "API_KEY": "cf445b7a-2473-11e9-9683-2e5474e6286d-rdpclient",
+        "UI_DOMAIN": "http://localhost:8080",
+        "DEMOPAY_ENDPOINT": "http://192.168.10.23:9090",
+    }
+}
