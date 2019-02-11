@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -15,12 +16,14 @@ import (
 func Processor(w http.ResponseWriter, r *http.Request) {
 	var endpoint string
 
-	re := regexp.MustCompile(DemoPayEndpoint + `/(\w+)/(.*)`)
+	log.Println("request endpoint", r.URL.Path)
+	re := regexp.MustCompile(`/(\w+)/(.*)`)
 	match := re.FindStringSubmatch(r.URL.Path)
 
 	// toggle between the different endpoint
 	switch match[1] {
 	case "card":
+		fmt.Println("CardAPI", CardAPI)
 		endpoint = CardAPI + match[2]
 		break
 	case "cardpay":
@@ -33,8 +36,6 @@ func Processor(w http.ResponseWriter, r *http.Request) {
 		endpoint = SecureAPI + match[2]
 		break
 	}
-	fmt.Println("Endpoint", endpoint)
-	fmt.Println("Method", r.Method)
 
 	// Set the OAuth client
 	config := clientcredentials.Config{
@@ -45,29 +46,35 @@ func Processor(w http.ResponseWriter, r *http.Request) {
 
 	oauth, err := config.Token(context.Background())
 	if err != nil {
-
+		log.Fatal(err)
 	}
-	r.Header.Set("Content-Type", "application/json")
-	r.Header.Set("Authorization", oauth.AccessToken)
-	r.Header.Set("x-api-key", APIKey)
 
 	// make request to card pay
 	body, _ := ioutil.ReadAll(r.Body)
 	data := bytes.NewBuffer(body)
+	log.Println("request body", string(body))
+
 	req, err := http.NewRequest(r.Method, endpoint, data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", oauth.AccessToken)
+	req.Header.Set("x-api-key", APIKey)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-
+		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-
+		log.Fatal(err)
 	}
 
+	log.Println("response body", string(respBody))
 	w.Header().Set("Access-Control-Allow-Origin", UIDomain)
 	w.WriteHeader(resp.StatusCode)
 	w.Write(respBody)
